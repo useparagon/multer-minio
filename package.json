@@ -1,6 +1,6 @@
 {
     "name": "multer-minio-storage",
-    "version": "0.0.8",
+    "version": "1.0.0-develop.1",
     "description": "Multer MinIO Storage",
     "main": "index.js",
     "types": "index.d.ts",
@@ -36,6 +36,9 @@
         "@babel/preset-env": "^7.10.3",
         "@babel/preset-typescript": "^7.10.1",
         "@babel/runtime": "^7.11.2",
+        "@semantic-release/exec": "^5.0.0",
+        "@semantic-release/github": "^7.2.1",
+        "@semantic-release/npm": "^7.1.1",
         "@types/chai": "^4.2.11",
         "@types/express": "^4.17.7",
         "@types/minio": "^7.0.6",
@@ -56,6 +59,7 @@
         "on-finished": "^2.3.0",
         "prettier": "^2.1.1",
         "rimraf": "^3.0.2",
+        "semantic-release": "^17.4.2",
         "ts-mocha": "^7.0.0",
         "typescript": "^3.9.5",
         "xtend": "^4.0.2"
@@ -69,6 +73,7 @@
         "build:js": "cross-env NODE_PATH=. babel src --out-dir lib --extensions \".ts,.tsx\" --ignore '**/*.test.ts' --source-maps false",
         "build:js:minify": "babel src --out-dir lib --extensions \".ts,.tsx\" --ignore '**/*.test.ts' --source-maps false --presets minify",
         "build:js:sourcemap": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline",
+        "release": "semantic-release",
         "eslint": "node_modules/.bin/eslint src/** --fix",
         "test:mocha": "cross-env NODE_PATH=. ts-mocha test/test.ts --timeout=60000 --exit",
         "test": "npm run type-check && npm run test:mocha"
