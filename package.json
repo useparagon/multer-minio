@@ -5,20 +5,23 @@
     "main": "index.js",
     "types": "index.d.ts",
     "license": "MIT",
-    "author": "Hoàng Ng. <hoangnguyen1247@gmail.com> (https://github.com/hoangnguyen1247)",
+    "author": "Paragon <engineering@useparagon.com> (https://github.com/useparagon)",
     "contributors": [],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/hoangnguyen1247/multer-minio-storage.git"
+        "url": "git+https://github.com/useparagon/multer-minio.git"
     },
     "keywords": [
         "multer",
         "minio",
         "storage"
     ],
-    "homepage": "https://github.com/hoangnguyen1247/multer-minio-storage#readme",
+    "homepage": "https://github.com/useparagon/multer-minio#readme",
     "bugs": {
-        "url": "https://github.com/hoangnguyen1247/multer-minio-storage/issues"
+        "url": "https://github.com/useparagon/multer-minio/issues"
+    },
+    "publishConfig": {
+        "access": "public"
     },
     "peerDependencies": {
         "minio": "^7.0.16"
