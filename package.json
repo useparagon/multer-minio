@@ -1,6 +1,6 @@
 {
     "name": "@useparagon/multer-minio",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "description": "Multer MinIO Storage",
     "main": "index.js",
     "types": "index.d.ts",
