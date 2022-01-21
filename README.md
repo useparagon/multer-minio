@@ -7,7 +7,7 @@ This project is inspired from [Multer S3](https://github.com/badunk/multer-s3)
 ## Installation
 
 ```sh
-npm install --save multer-minio-storage
+npm install --save @useparagon/multer-minio
 ```
 
 ## Usage
@@ -16,7 +16,7 @@ npm install --save multer-minio-storage
 var minio = require('minio')
 var express = require('express')
 var multer = require('multer')
-var multerMinIOStorage = require('multer-minio-storage')
+var multerMinIOStorage = require('@useparagon/multer-minio')
 
 var app = express()
 var minioClient = new minio.Client({ /* ... */ })
