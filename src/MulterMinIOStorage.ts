@@ -331,6 +331,7 @@ MinIOStorage.prototype._handleFile = function (req, file, cb) {
                 opts.bucket,
                 parseFileKey(opts.key, 'thumb'),
                 thumbStream,
+                { 'Content-Type': opts.contentType },
                 (err, etag) => {
                     if (err) cb(err);
                     else {
@@ -358,6 +359,7 @@ MinIOStorage.prototype._handleFile = function (req, file, cb) {
                 opts.bucket,
                 parseFileKey(opts.key, 'featured'),
                 featuredStream,
+                { 'Content-Type': opts.contentType },
                 (err, etag) => {
                     if (err) cb(err);
                     else {
@@ -385,6 +387,7 @@ MinIOStorage.prototype._handleFile = function (req, file, cb) {
             opts.key,
             file.stream,
             file.size,
+            { 'Content-Type': opts.contentType },
             (err, etag) => {
                 if (err) cb(err);
                 else {
