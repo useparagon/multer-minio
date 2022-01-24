@@ -3,9 +3,6 @@ import stream from 'stream';
 import fileType from 'file-type';
 import isSvg from 'is-svg';
 import parallel from 'run-parallel';
-import sharp from 'sharp';
-
-import { parseFileKey } from './utils/parse-filekey';
 
 function staticValue(value) {
     return function (req, file, cb) {
@@ -22,8 +19,6 @@ const defaultContentDisposition = staticValue(null);
 const defaultStorageClass = staticValue('STANDARD');
 const defaultSSE = staticValue(null);
 const defaultSSEKMS = staticValue(null);
-const defaultShouldCreateThumbnail = staticValue(null);
-const defaultShouldCreateFeatured = staticValue(null);
 
 function defaultKey(req, file, cb) {
     crypto.randomBytes(16, (err, raw) => {
@@ -65,8 +60,6 @@ function collect(storage, req, file, cb) {
             storage.getStorageClass.bind(storage, req, file),
             storage.getSSE.bind(storage, req, file),
             storage.getSSEKMS.bind(storage, req, file),
-            storage.getShouldCreateThumbnail.bind(storage, req, file),
-            storage.getShouldCreateFeatured.bind(storage, req, file),
         ],
         (err, values) => {
             if (err) return cb(err);
@@ -89,8 +82,6 @@ function collect(storage, req, file, cb) {
                         replacementStream: replacementStream,
                         serverSideEncryption: values[7],
                         sseKmsKeyId: values[8],
-                        shouldCreateThumbnail: values[9],
-                        shouldCreateFeatured: values[10],
                     });
                 }
             );
@@ -256,38 +247,6 @@ function MinIOStorage(opts) {
                 'Expected opts.sseKmsKeyId to be undefined, string, or function'
             );
     }
-
-    switch (typeof opts.shouldCreateThumbnail) {
-        case 'function':
-            this.getShouldCreateThumbnail = opts.shouldCreateThumbnail;
-            break;
-        case 'boolean':
-            this.getShouldCreateThumbnail = staticValue(opts.shouldCreateThumbnail);
-            break;
-        case 'undefined':
-            this.getShouldCreateThumbnail = defaultShouldCreateThumbnail;
-            break;
-        default:
-            throw new TypeError(
-                'Expected opts.shouldCreateThumbnail to be undefined, boolean, or function'
-            );
-    }
-
-    switch (typeof opts.shouldCreateFeatured) {
-        case 'function':
-            this.getShouldCreateFeatured = opts.shouldCreateFeatured;
-            break;
-        case 'boolean':
-            this.getShouldCreateFeatured = staticValue(opts.shouldCreateFeatured);
-            break;
-        case 'undefined':
-            this.getShouldCreateFeatured = defaultShouldCreateFeatured;
-            break;
-        default:
-            throw new TypeError(
-                'Expected opts.shouldCreateFeatured to be undefined, boolean, or function'
-            );
-    }
 }
 
 MinIOStorage.prototype._handleFile = function (req, file, cb) {
@@ -311,75 +270,6 @@ MinIOStorage.prototype._handleFile = function (req, file, cb) {
 
         if (opts.contentDisposition) {
             params.ContentDisposition = opts.contentDisposition;
-        }
-
-        const sharpStream = sharp();
-        const thumbStream = new stream.PassThrough();
-        const featuredStream = new stream.PassThrough();
-        sharpStream
-            .clone()
-            .resize(320, 320, { fit: sharp.fit.cover })
-            .pipe(thumbStream);
-        sharpStream
-            .clone()
-            .resize(320, 180, { fit: sharp.fit.cover })
-            .pipe(featuredStream);
-        file.stream.pipe(sharpStream);
-
-        if (opts.shouldCreateThumbnail) {
-            this.minioClient.putObject(
-                opts.bucket,
-                parseFileKey(opts.key, 'thumb'),
-                thumbStream,
-                { 'Content-Type': opts.contentType },
-                (err, etag) => {
-                    if (err) cb(err);
-                    else {
-                        cb(null, {
-                            size: currentSize,
-                            bucket: opts.bucket,
-                            key: opts.key,
-                            acl: opts.acl,
-                            contentType: opts.contentType,
-                            contentDisposition: opts.contentDisposition,
-                            storageClass: opts.storageClass,
-                            serverSideEncryption: opts.serverSideEncryption,
-                            metadata: opts.metadata,
-                            // location: result.Location,
-                            etag: etag,
-                            // versionId: result.VersionId,
-                        });
-                    }
-                }
-            );
-        }
-
-        if (opts.shouldCreateFeatured) {
-            this.minioClient.putObject(
-                opts.bucket,
-                parseFileKey(opts.key, 'featured'),
-                featuredStream,
-                { 'Content-Type': opts.contentType },
-                (err, etag) => {
-                    if (err) cb(err);
-                    else {
-                        cb(null, {
-                            size: currentSize,
-                            bucket: opts.bucket,
-                            key: opts.key,
-                            acl: opts.acl,
-                            contentType: opts.contentType,
-                            contentDisposition: opts.contentDisposition,
-                            storageClass: opts.storageClass,
-                            serverSideEncryption: opts.serverSideEncryption,
-                            metadata: opts.metadata,
-                            // location: result.Location,
-                            etag: etag,
-                            // versionId: result.VersionId,
-                        });
-                    }
-                }
-            );
         }
 
         this.minioClient.putObject(
@@ -413,16 +303,6 @@ MinIOStorage.prototype._handleFile = function (req, file, cb) {
 
 MinIOStorage.prototype._removeFile = function (req, file, cb) {
     this.minioClient.removeObject(file.bucket, file.key, cb);
-    this.minioClient.removeObject(
-        file.bucket,
-        parseFileKey(file.key, '-thumb'),
-        cb
-    );
-    this.minioClient.removeObject(
-        file.bucket,
-        parseFileKey(file.key, '-featured'),
-        cb
-    );
 };
 
 export default function (opts) {

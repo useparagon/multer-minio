@@ -1,6 +1,6 @@
 {
     "name": "@useparagon/multer-minio",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "description": "Multer MinIO Storage",
     "main": "index.js",
     "types": "index.d.ts",
@@ -31,8 +31,7 @@
         "@babel/runtime": "^7.11.2",
         "file-type": "^3.3.0",
         "is-svg": "^4.2.1",
-        "run-parallel": "^1.1.9",
-        "sharp": "^0.26.0"
+        "run-parallel": "^1.1.9"
     },
     "devDependencies": {
         "@babel/cli": "^7.10.3",
