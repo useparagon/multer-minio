@@ -254,28 +254,10 @@ MinIOStorage.prototype._handleFile = function (req, file, cb) {
         if (err) return cb(err);
 
         const currentSize = 0;
-
-        const params: any = {
-            Bucket: opts.bucket,
-            Key: opts.key,
-            ACL: opts.acl,
-            CacheControl: opts.cacheControl,
-            ContentType: opts.contentType,
-            Metadata: opts.metadata,
-            StorageClass: opts.storageClass,
-            ServerSideEncryption: opts.serverSideEncryption,
-            SSEKMSKeyId: opts.sseKmsKeyId,
-            Body: opts.replacementStream || file.stream,
-        };
-
-        if (opts.contentDisposition) {
-            params.ContentDisposition = opts.contentDisposition;
-        }
-
         this.minioClient.putObject(
             opts.bucket,
             opts.key,
-            file.stream,
+            opts.replacementStream || file.stream,
             file.size,
             { 'Content-Type': opts.contentType },
             (err, etag) => {
